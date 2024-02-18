@@ -38,12 +38,22 @@ int main(int argc, char* argv[])
     }
 
     kaitai::kstream ks(&input_stream);
-    renderware_binary_stream_t rw(&ks);
+    std::shared_ptr<renderware_binary_stream_t> rw;
 
-    switch (rw.code())
+    try
+    {
+        rw = std::make_shared<renderware_binary_stream_t>(&ks);
+    }
+    catch (const std::exception& err)
+    {
+        std::cerr << "Failed to parse " << input << ". File may be corrupted or invalid." << std::endl;
+        return 1;
+    }
+
+    switch (rw->code())
     {
         default:
-            std::cout << "Unsupported chunk type 0x" << std::hex << std::setw(2) << std::setfill('0') << rw.code() << std::endl;
+            std::cout << "Unsupported chunk type 0x" << std::hex << std::setw(2) << std::setfill('0') << rw->code() << std::endl;
             break;
     }
     
