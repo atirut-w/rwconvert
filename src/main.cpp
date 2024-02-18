@@ -40,7 +40,12 @@ int main(int argc, char* argv[])
     kaitai::kstream ks(&input_stream);
     renderware_binary_stream_t rw(&ks);
 
-    std::cout << "RenderWare version: " << std::hex << rw.version() << std::dec << std::endl;
+    switch (rw.code())
+    {
+        default:
+            std::cout << "Unsupported chunk type 0x" << std::hex << std::setw(2) << std::setfill('0') << rw.code() << std::endl;
+            break;
+    }
     
     return 0;
 }
