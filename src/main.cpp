@@ -1,5 +1,9 @@
 #include <argparse/argparse.hpp>
 #include <memory>
+#include <fstream>
+#include <filesystem>
+#include <renderware_binary_stream.h>
+#include <iomanip>
 
 std::shared_ptr<const argparse::ArgumentParser> parse_arguments(int argc, char* argv[])
 {
@@ -25,6 +29,18 @@ std::shared_ptr<const argparse::ArgumentParser> parse_arguments(int argc, char* 
 int main(int argc, char* argv[])
 {
     auto arguments = parse_arguments(argc, argv);
+    std::filesystem::path input(arguments->get("input"));
+
+    std::ifstream input_stream(input, std::ios::binary);
+    if (!input_stream)
+    {
+        std::cerr << "Failed to open " << input << std::endl;
+    }
+
+    kaitai::kstream ks(&input_stream);
+    renderware_binary_stream_t rw(&ks);
+
+    std::cout << "RenderWare version: " << std::hex << rw.version() << std::dec << std::endl;
     
     return 0;
 }
